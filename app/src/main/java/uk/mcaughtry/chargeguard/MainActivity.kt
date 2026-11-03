@@ -115,10 +115,10 @@ class MainActivity : Activity() {
             setPadding(dp(22), dp(36), dp(22), dp(40))
             addView(battery)
             addView(armed)
-            addView(timedBtn)
-            addView(testBtn)
             addView(levelBtn)
             addView(refreshBtn)
+            addView(timedBtn)
+            addView(testBtn)
             addView(infoBtn)
         }
         setContentView(ScrollView(this).apply { addView(column) })

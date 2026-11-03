@@ -11,6 +11,9 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.17 - button order
+- Owner: crown press stops the alert (confirmed working, v1.15+). Asked for the order: Alert level, Refresh settings, then the two test buttons, then Info. Done; no other change.
+
 ## 1.16 - tidier main screen
 - Owner: it looked like a prototype. Main screen now has a large battery figure and one status line at the top, then rounded buttons (Test in 1 minute, Test alert now, Alert level, Refresh settings, Info). All technical lines (permissions, due/fired/posted/shown times, settings and app versions) moved to an Info screen.
 - New files: InfoActivity.kt, Status.kt. No change to alert behaviour. Supersedes 1.15 (crown change) and 1.14 (level wheel). Untested on the watch; layout on a round screen may need adjustment.
@@ -18,7 +21,7 @@ until it has been seen working.
 ## 1.15 - crown press stops the alert
 - Owner's reflex is to press the crown to stop alarms, as with other alarm apps. On Pixel Watch the crown press is handled by the system and sends the watch to the watch face, so apps usually never see it.
 - Now: when the flashing screen is stopped (hidden) while the display is still on, it counts as dismissed and the flash/vibration stop. A display that simply switched off does not dismiss it. The crown/side-button key codes are also handled in case this watch passes them through.
-- Untested on the watch. Supersedes 1.14 (same changes plus this).
+- CONFIRMED by owner: pressing the crown stops the alert. Supersedes 1.14 (same changes plus this).
 
 ## 1.14 - alert level wheel back, as a permanent setting
 - Owner wants to set the level on the watch without going to GitHub. Brought the wheel back (steps of 5) but as a plain, visible setting: "Set" stores the level on the watch, "Use file" hands control back to config/settings.json.
