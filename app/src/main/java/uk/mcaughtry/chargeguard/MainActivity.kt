@@ -3,17 +3,19 @@ package uk.mcaughtry.chargeguard
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.provider.Settings
-import android.os.Bundle
 import android.view.Gravity
 import android.widget.Button
 import android.widget.LinearLayout
@@ -21,16 +23,35 @@ import android.widget.NumberPicker
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
-import java.text.DateFormat
-import java.util.Date
 
 /**
- * Status screen. Settings are not edited here: change config/settings.json on
- * GitHub, then press "Refresh settings" (or wait for the next evening check).
+ * Main screen: battery and one status line at the top, then the main buttons.
+ * Technical details live behind the Info button (InfoActivity).
  */
 class MainActivity : Activity() {
-    private lateinit var status: TextView
+    private lateinit var battery: TextView
+    private lateinit var armed: TextView
     private lateinit var levelBtn: Button
+
+    private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
+
+    private fun styledButton(label: String, color: Int, onClick: (Button) -> Unit): Button =
+        Button(this).apply {
+            text = label
+            isAllCaps = false
+            textSize = 14f
+            setTextColor(Color.WHITE)
+            minHeight = dp(44)
+            minimumHeight = dp(44)
+            background = GradientDrawable().apply {
+                setColor(color)
+                cornerRadius = dp(24).toFloat()
+            }
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { setMargins(0, dp(4), 0, dp(4)) }
+            setOnClickListener { onClick(this) }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,55 +62,65 @@ class MainActivity : Activity() {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 0)
         }
 
-        val pad = (resources.displayMetrics.density * 28).toInt()
+        val grey = Color.parseColor("#3A3A3C")
+        val blue = Color.parseColor("#2F6FDB")
+
+        battery = TextView(this).apply {
+            gravity = Gravity.CENTER
+            textSize = 30f
+            typeface = Typeface.DEFAULT_BOLD
+        }
+        armed = TextView(this).apply {
+            gravity = Gravity.CENTER
+            textSize = 12f
+            setTextColor(Color.LTGRAY)
+        }
+
+        val timedBtn = styledButton("Test in 1 minute", blue) { btn ->
+            Scheduler.scheduleTest(this)
+            buzz()
+            Toast.makeText(this, "Test set. Alert in 1 minute: let the screen go dark.", Toast.LENGTH_LONG).show()
+            object : CountDownTimer(60_000, 1000) {
+                override fun onTick(msLeft: Long) { btn.text = "Alert in ${msLeft / 1000 + 1}s" }
+                override fun onFinish() { btn.text = "Test in 1 minute" }
+            }.start()
+        }
+        val testBtn = styledButton("Test alert now", grey) {
+            startActivity(Intent(this, AlertActivity::class.java))
+        }
+        levelBtn = styledButton("", grey) { pickLevel() }
+        val refreshBtn = styledButton("Refresh settings", grey) { btn ->
+            btn.text = "Fetching..."
+            Thread {
+                val ok = Prefs.fetch(this)
+                Scheduler.scheduleDaily(this)
+                runOnUiThread {
+                    btn.text = "Refresh settings"
+                    buzz()
+                    Toast.makeText(
+                        this,
+                        if (ok) "Settings updated: v${Prefs.settingsVersion(this)}"
+                        else "Couldn't reach GitHub. Check the watch's Wi-Fi.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    refresh()
+                }
+            }.start()
+        }
+        val infoBtn = styledButton("Info", grey) { startActivity(Intent(this, InfoActivity::class.java)) }
+
         val column = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
-            setPadding(pad, pad, pad, pad)
+            setPadding(dp(22), dp(36), dp(22), dp(40))
+            addView(battery)
+            addView(armed)
+            addView(timedBtn)
+            addView(testBtn)
+            addView(levelBtn)
+            addView(refreshBtn)
+            addView(infoBtn)
         }
-        status = TextView(this).apply { gravity = Gravity.CENTER; textSize = 14f }
-        val refreshBtn = Button(this).apply {
-            text = "Refresh settings"
-            setOnClickListener {
-                text = "Fetching..."
-                Thread {
-                    val ok = Prefs.fetch(context)
-                    Scheduler.scheduleDaily(context)
-                    runOnUiThread {
-                        text = "Refresh settings"
-                        buzz()
-                        Toast.makeText(
-                            context,
-                            if (ok) "Settings updated: v${Prefs.settingsVersion(context)}"
-                            else "Couldn't reach GitHub. Check the watch's Wi-Fi.",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        refresh()
-                    }
-                }.start()
-            }
-        }
-        val testBtn = Button(this).apply {
-            text = "Test alert"
-            setOnClickListener { startActivity(Intent(context, AlertActivity::class.java)) }
-        }
-        levelBtn = Button(this).apply {
-            setOnClickListener { pickLevel() }
-        }
-        val timedBtn = Button(this).apply {
-            text = "Test in 1 minute"
-            setOnClickListener {
-                Scheduler.scheduleTest(context)
-                buzz()
-                Toast.makeText(context, "Test set. Alert in 1 minute: let the screen go dark.", Toast.LENGTH_LONG).show()
-                val btn = this@apply
-                object : CountDownTimer(60_000, 1000) {
-                    override fun onTick(msLeft: Long) { btn.text = "Alert in ${msLeft / 1000 + 1}s: screen off" }
-                    override fun onFinish() { btn.text = "Test in 1 minute" }
-                }.start()
-            }
-        }
-        listOf(status, refreshBtn, levelBtn, timedBtn, testBtn).forEach { column.addView(it) }
         setContentView(ScrollView(this).apply { addView(column) })
 
         Scheduler.scheduleDaily(this)
@@ -97,7 +128,17 @@ class MainActivity : Activity() {
         askForFullScreen()
         askForOverlay()
         // Pick up any new settings on every open.
-        Thread { if (Prefs.fetch(this)) { Scheduler.scheduleDaily(this); runOnUiThread { refresh() } } }.start()
+        Thread {
+            if (Prefs.fetch(this)) {
+                Scheduler.scheduleDaily(this)
+                runOnUiThread { refresh() }
+            }
+        }.start()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refresh()
     }
 
     /** A swipe wheel (steps of 5) that sets the alert level on the watch itself. */
@@ -127,15 +168,9 @@ class MainActivity : Activity() {
         v.vibrate(VibrationEffect.createOneShot(150, VibrationEffect.DEFAULT_AMPLITUDE))
     }
 
-    /** Android 14+ must allow full-screen notifications for the alert to take over a dark screen. */
-    private fun fullScreenAllowed(): Boolean =
-        Build.VERSION.SDK_INT < 34 || getSystemService(NotificationManager::class.java).canUseFullScreenIntent()
-
-    private fun overlayAllowed(): Boolean = Settings.canDrawOverlays(this)
-
     /** "Display over other apps" lets the alert take over even with the screen on. Asked once. */
     private fun askForOverlay() {
-        if (overlayAllowed()) return
+        if (Status.overlayAllowed(this)) return
         val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
         if (prefs.getBoolean("askedOverlay", false)) return
         prefs.edit().putBoolean("askedOverlay", true).apply()
@@ -146,39 +181,25 @@ class MainActivity : Activity() {
         }
     }
 
-    /** Opens the permission screen once if it is not allowed. */
+    /** Opens the full-screen permission screen once if it is not allowed. */
     private fun askForFullScreen() {
-        if (fullScreenAllowed()) return
+        if (Status.fullScreenAllowed(this)) return
         val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
         if (prefs.getBoolean("askedFullScreen", false)) return
         prefs.edit().putBoolean("askedFullScreen", true).apply()
         try {
             startActivity(Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT, Uri.parse("package:$packageName")))
         } catch (_: Exception) {
-            // This watch has no such screen; the status line will say so.
+            // This watch has no such screen; the Info screen will say so.
         }
     }
 
-    private fun timeText(ms: Long) =
-        if (ms == 0L) "-" else DateFormat.getTimeInstance(DateFormat.MEDIUM).format(Date(ms))
-
     private fun refresh() {
         val (pct, plugged) = Alert.batteryStatus(this)
+        battery.text = if (plugged) "$pct% charging" else "$pct%"
+        armed.text = Status.armedLine(this)
         val onWatch = Prefs.watchThreshold(this)
-        levelBtn.text = if (onWatch >= 0) "Alert at $onWatch% (set here)"
-        else "Alert at ${Prefs.fileThreshold(this)}% (from file)"
-        val info = packageManager.getPackageInfo(packageName, 0)
-        val last = Prefs.lastFetch(this)
-        val fetched = if (last == 0L) "never fetched"
-        else DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(Date(last))
-        status.text = "Battery $pct%" + (if (plugged) " (charging)" else "") + "\n" +
-            (if (Prefs.enabled(this)) "Armed: %02d:00, at %d%% or less%s".format(Prefs.hour(this), Prefs.threshold(this), if (onWatch >= 0) " (set on watch)" else "")
-            else "Off") + "\n" +
-            "Takeover: " + (if (fullScreenAllowed()) "allowed" else "NOT allowed") + "\n" +
-            "Over apps: " + (if (overlayAllowed()) "allowed" else "NOT allowed") + "\n" +
-            "Due ${timeText(Prefs.lastDue(this))}\nFired ${timeText(Prefs.lastFired(this))}\n" +
-            "Posted ${timeText(Prefs.lastPosted(this))}\nShown ${timeText(Prefs.lastShown(this))}\n" +
-            "Settings v${Prefs.settingsVersion(this)}\n$fetched\n" +
-            "App v${info.versionName} (${info.longVersionCode})"
+        levelBtn.text = if (onWatch >= 0) "Alert level: $onWatch%"
+        else "Alert level: ${Prefs.fileThreshold(this)}% (file)"
     }
 }
