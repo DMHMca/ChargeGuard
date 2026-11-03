@@ -2,7 +2,7 @@
 
 **The problem.** A Pixel Watch 3 needs charging every day. If it runs out in the daytime that is a nuisance. If it runs out overnight, sleep tracking fails.
 
-**The idea.** At 7pm each evening the watch looks at its own battery. If it is 50% or lower and it is not on the charger, the whole screen flashes red and white at full brightness and the watch vibrates in a long repeating pattern, until you put it on the charger. It alerts once only. There is an optional re-check if you tap it away without charging, but it is switched off, because you would not want it going off at a concert or in bed; it can be switched on in the settings file.
+**The idea.** At 7pm each evening the watch looks at its own battery. If it is 50% or lower and it is not on the charger, the whole screen flashes red and white at full brightness and the watch vibrates in a long repeating pattern, until you put it on the charger, tap the screen, or press the crown. It alerts once only. There is an optional re-check if you tap it away without charging, but it is switched off, because you would not want it going off at a concert or in bed; it can be switched on in the settings file.
 
 **Why it lives on the watch.** The watch can read its own battery reliably, and you are nearly always wearing it. A phone alert could be in another room, and a phone cannot make the watch flash.
 

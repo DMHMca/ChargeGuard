@@ -12,10 +12,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.PowerManager
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
@@ -102,6 +104,25 @@ class AlertActivity : Activity() {
             getSystemService(VibratorManager::class.java).defaultVibrator
         else
             getSystemService(Vibrator::class.java)
+
+    /**
+     * Pressing the crown or side button sends the watch to the watch face, which hides this
+     * screen while the display stays on. Treat that as "dismiss". A screen that has simply
+     * switched off (display not interactive) does not count, so the alert keeps going.
+     */
+    override fun onStop() {
+        super.onStop()
+        if (getSystemService(PowerManager::class.java).isInteractive) finish()
+    }
+
+    /** If this watch passes the crown or side button through to apps, they dismiss too. */
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        return when (keyCode) {
+            KeyEvent.KEYCODE_STEM_PRIMARY, KeyEvent.KEYCODE_STEM_1,
+            KeyEvent.KEYCODE_STEM_2, KeyEvent.KEYCODE_STEM_3 -> { finish(); true }
+            else -> super.onKeyDown(keyCode, event)
+        }
+    }
 
     override fun onDestroy() {
         handler.removeCallbacksAndMessages(null)

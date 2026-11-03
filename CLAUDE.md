@@ -45,7 +45,7 @@ The app lives on the watch because a watch can read its own battery reliably and
 - `Scheduler.kt`: the daily alarm (uses `setAlarmClock`, which needs the `USE_EXACT_ALARM` permission, with an inexact fallback) and the re-check.
 - `AlarmReceiver.kt`: fetches settings, re-arms tomorrow's alarm, then checks the battery.
 - `Alert.kt`: battery reading, the full-screen notification, and a direct launch of the flashing screen (needs "display over other apps").
-- `AlertActivity.kt`: the flashing screen and vibration.
+- `AlertActivity.kt`: the flashing screen and vibration. Stops on tap, on the charger being connected, after 5 minutes, or when the owner presses the crown or side button (the system sends the watch to the watch face; `onStop` with the display still on counts as dismiss).
 - `MainActivity.kt`: status screen, "Refresh settings", "Test in 1 minute" (always fires, whatever the battery, for tests and demos) and "Test alert". The alert level wheel (steps of 5) sets the level on the watch; "Use file" returns control to the settings file. The button and status line say which is in force.
 - `docs/CHANGELOG.md`: change and test log.
 - `OVERVIEW.md`: plain-English overview.
