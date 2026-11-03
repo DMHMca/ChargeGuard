@@ -11,6 +11,14 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## Test results so far (owner, real Pixel Watch 3)
+- 1.2: app opens; "Test alert" flashes and vibrates.
+- 1.4: "Test in 1 minute" vibrated only (no flash) until USE_FULL_SCREEN_INTENT was granted by hand with adb; after that it flashed, but late and only when the screen was dark.
+- 1.8: vibrated, no flash (screen possibly on).
+- 1.9: WORKS. Flashes red/white and vibrates from "Test in 1 minute" with the screen in any state, after `appops set uk.mcaughtry.chargeguard SYSTEM_ALERT_WINDOW allow` (status line "Over apps" still says NOT allowed on this watch; the appop read-back says allow, and the alert works regardless).
+- Still to verify: the real 19:00 run at a real battery level; the settings-file fetch; how late (if at all) the alert is, from the Due/Fired/Posted/Shown lines.
+- Known risk: both permissions (full-screen, and overlay via appops) were granted with adb. This watch has no screen to grant overlay by hand. A Play Store install will not have them, so before relying on the Play route we must find how to get the alert to work without adb, or document the adb step.
+
 ## 1.9 - alert must flash even if the screen is on
 - Owner test on 1.8: vibrated but no flashing; the watch may not have been dark. A full-screen notification only takes over an idle screen; with the screen on Android shows a pop-up instead, so the alert depended on screen state.
 - Now the app also launches the flashing screen directly when the alarm fires. This needs "display over other apps" (SYSTEM_ALERT_WINDOW); declared, requested once on first open, and shown as "Over apps" on the status screen. Grant by hand if the watch has no such screen: `adb shell appops set uk.mcaughtry.chargeguard SYSTEM_ALERT_WINDOW allow`.

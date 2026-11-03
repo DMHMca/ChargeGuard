@@ -52,7 +52,7 @@ The app lives on the watch because a watch can read its own battery reliably and
 
 ## Status
 
-Built by GitHub Actions, installed on the owner's Pixel Watch 3 with adb, and seen working: the app opens, and "Test alert" flashes and vibrates. Not yet seen working: the alert waking a dark screen by itself via "Test in 1 minute" (the key test), the full-screen permission being granted for the background case, and the settings file fetch reported on the status screen. Check `docs/CHANGELOG.md` for the latest.
+Built by GitHub Actions and installed on the owner's Pixel Watch 3 with adb. Seen working (v1.9): "Test in 1 minute" runs the real alarm path and the watch flashes red/white and vibrates, whatever the screen state. This needed two permissions granted by hand with adb on this watch: `appops set uk.mcaughtry.chargeguard USE_FULL_SCREEN_INTENT allow` and `appops set uk.mcaughtry.chargeguard SYSTEM_ALERT_WINDOW allow` (the watch has no screen to grant overlay manually; the in-app "Over apps" line reads NOT allowed even when it works). A fresh install, including from Google Play, will lack them: that is an open risk. Not yet seen: the real 19:00 run, the settings-file fetch confirmed on screen, and the timing (Due/Fired/Posted/Shown lines). Check `docs/CHANGELOG.md` for the latest.
 
 ## Open decisions
 
