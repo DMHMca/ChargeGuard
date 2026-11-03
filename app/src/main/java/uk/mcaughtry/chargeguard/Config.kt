@@ -13,7 +13,8 @@ object Config {
 
     const val DEFAULT_THRESHOLD = 45        // alert at this % or less
     const val DEFAULT_HOUR = 19             // daily check, 24h clock
-    const val RECHECK_MINUTES = 30          // re-check after a tap-dismiss
+    const val RECHECK_ENABLED = false       // alert once only; true re-checks after a tap-dismiss
+    const val RECHECK_MINUTES = 30          // gap between re-checks, if enabled
     const val LAST_RECHECK_HOUR = 21        // no re-checks or alerts from this hour on
     const val ALERT_TIMEOUT_MINUTES = 5L
     const val FLASH_INTERVAL_MS = 400L

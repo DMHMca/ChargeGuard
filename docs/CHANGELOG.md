@@ -11,6 +11,11 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.12 - one alert only (re-checks off by default)
+- Owner: the 19:00 test fired exactly on schedule. A re-check alert is not wanted (could go off at a concert or in bed); one alert at 19:00 is enough, and the threshold can be adjusted if it proves too low.
+- New setting `recheckEnabled` (default false) in config/settings.json. When true, the earlier behaviour returns: after a tap-dismiss it re-checks every `recheckMinutes`, never at or after `lastRecheckHour`. Needs this build once (settings v4). Supersedes 1.11 (the same build plus this).
+- Verified by owner: the real 19:00 alarm fired on its own, exactly on time.
+
 ## 1.11 - no alerts late in the evening
 - Owner: the 19:00 alert was tapped away, and a re-check alert came at 19:30 (below threshold). They do not want alerts while asleep; re-checks used to run until 23:00.
 - New setting `lastRecheckHour` in config/settings.json (default 21): re-checks stop before this hour, so the last possible re-check alert is before 21:00. The 19:00 alert itself is unaffected. Needs this build installed once; after that the hour can be changed from the settings file (settings v3).

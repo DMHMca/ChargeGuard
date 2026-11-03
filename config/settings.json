@@ -1,8 +1,9 @@
 {
-  "version": 3,
+  "version": 4,
   "enabled": true,
   "threshold": 45,
   "hour": 19,
+  "recheckEnabled": false,
   "recheckMinutes": 30,
   "lastRecheckHour": 21,
   "flashIntervalMs": 400,
