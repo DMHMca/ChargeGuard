@@ -27,6 +27,8 @@ The app lives on the watch because a watch can read its own battery reliably and
 
 **Slower: new build.** Any change to Kotlin code needs a new APK on the watch. A GitHub Actions job (`.github/workflows/build.yml`) builds a debug APK on every push that changes the app, and publishes it as a downloadable artifact. Until the Google Play route is set up, install it with `adb` (see `scripts/deploy.sh`). The planned end state is the Google Play internal testing track, where the watch updates itself from the Play Store.
 
+**Signing.** Debug builds are signed with the fixed throwaway key in `keystore/debug.keystore` (committed on purpose, password `android`, so every build installs over the last). Do not delete or regenerate it, or the watch will refuse updates and need an uninstall. This is separate from the Google Play signing key, which will never be in the repo.
+
 ## Rules for every release
 
 1. Bump BOTH `versionCode` and `versionName` in `app/build.gradle.kts`. They are shown on the watch's status screen as "App vN (code)", so the owner can tell which build is running.
