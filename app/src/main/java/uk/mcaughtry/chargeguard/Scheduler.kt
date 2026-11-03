@@ -16,6 +16,7 @@ object Scheduler {
     const val ACTION_CHECK = "uk.mcaughtry.chargeguard.CHECK"
     const val DAILY = 1
     const val RECHECK = 2
+    const val TEST = 3
 
     fun scheduleDaily(c: Context) {
         if (!Prefs.enabled(c)) {
@@ -40,6 +41,11 @@ object Scheduler {
         val hour = Calendar.getInstance().apply { timeInMillis = t }.get(Calendar.HOUR_OF_DAY)
         if (hour >= Config.LAST_RECHECK_HOUR || hour < Prefs.hour(c)) return
         setAt(c, t, RECHECK)
+    }
+
+    /** Runs the real alarm path in one minute, for testing with the wrist down. */
+    fun scheduleTest(c: Context) {
+        setAt(c, System.currentTimeMillis() + 60_000L, TEST)
     }
 
     private fun intentFor(c: Context, code: Int) =

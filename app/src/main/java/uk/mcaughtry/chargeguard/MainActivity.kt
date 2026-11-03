@@ -20,6 +20,7 @@ import java.util.Date
  */
 class MainActivity : Activity() {
     private lateinit var status: TextView
+    private lateinit var levelBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +56,22 @@ class MainActivity : Activity() {
             text = "Test alert"
             setOnClickListener { startActivity(Intent(context, AlertActivity::class.java)) }
         }
-        listOf(status, refreshBtn, testBtn).forEach { column.addView(it) }
+        levelBtn = Button(this).apply {
+            setOnClickListener {
+                // Cycle the test override: 50, 55 ... 100, then back to the settings file.
+                val cur = Prefs.overrideThreshold(context)
+                Prefs.setOverrideThreshold(context, if (cur < 0) 50 else if (cur >= 100) -1 else cur + 5)
+                refresh()
+            }
+        }
+        val timedBtn = Button(this).apply {
+            text = "Test in 1 minute"
+            setOnClickListener {
+                Scheduler.scheduleTest(context)
+                text = "Due in 1 min: wrist down"
+            }
+        }
+        listOf(status, refreshBtn, levelBtn, timedBtn, testBtn).forEach { column.addView(it) }
         setContentView(ScrollView(this).apply { addView(column) })
 
         Scheduler.scheduleDaily(this)
@@ -66,12 +82,15 @@ class MainActivity : Activity() {
 
     private fun refresh() {
         val (pct, plugged) = Alert.batteryStatus(this)
+        val override = Prefs.overrideThreshold(this)
+        levelBtn.text = if (override >= 0) "Alert at $override% (TEST, tap)"
+        else "Alert at ${Prefs.settingsThreshold(this)}% (settings)"
         val info = packageManager.getPackageInfo(packageName, 0)
         val last = Prefs.lastFetch(this)
         val fetched = if (last == 0L) "never fetched"
         else DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(Date(last))
         status.text = "Battery $pct%" + (if (plugged) " (charging)" else "") + "\n" +
-            (if (Prefs.enabled(this)) "Armed: %02d:00, at %d%% or less".format(Prefs.hour(this), Prefs.threshold(this))
+            (if (Prefs.enabled(this)) "Armed: %02d:00, at %d%% or less%s".format(Prefs.hour(this), Prefs.threshold(this), if (override >= 0) " (TEST)" else "")
             else "Off") + "\n" +
             "Settings v${Prefs.settingsVersion(this)}\n$fetched\n" +
             "App v${info.versionName} (${info.longVersionCode})"

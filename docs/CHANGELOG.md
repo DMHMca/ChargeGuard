@@ -11,6 +11,12 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.3 - test controls on the watch
+- Status screen: "Alert at X%" button cycles a temporary test override (50 to 100, then back to the settings file). Status shows (TEST) while it is on.
+- "Test in 1 minute" button runs the real alarm path (alarm, battery check, full-screen takeover) so it can be watched with the wrist down.
+- Verified on the watch before this: app opens (1.2), Test alert flashes and vibrates.
+- Not yet verified: the alert waking a dark screen by itself; the settings fetch (user to report the Settings line).
+
 ## 1.2 - fixed signing key
 - Reinstalling 1.1 failed with INSTALL_FAILED_UPDATE_INCOMPATIBLE because every GitHub build made a new random debug key.
 - Added keystore/debug.keystore (throwaway debug key, deliberately committed) and pointed the debug build at it, so all builds from here are signed identically and install over each other.
