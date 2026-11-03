@@ -79,17 +79,20 @@ class MainActivity : Activity() {
 
     /** A swipe wheel for a test alert level; "Use settings" removes the override. */
     private fun pickLevel() {
+        // Steps of 5 (5, 10 ... 100) so the wheel is quick to spin to a number.
+        val labels = Array(20) { ((it + 1) * 5).toString() }
         val current = Prefs.threshold(this).coerceIn(5, 100)
         val picker = NumberPicker(this).apply {
-            minValue = 5
-            maxValue = 100
-            value = current
+            minValue = 0
+            maxValue = labels.size - 1
+            displayedValues = labels
+            value = (Math.round(current / 5f) - 1).coerceIn(0, labels.size - 1)
             wrapSelectorWheel = false
         }
         AlertDialog.Builder(this)
             .setTitle("Alert at (%)")
             .setView(picker)
-            .setPositiveButton("Set") { _, _ -> Prefs.setOverrideThreshold(this, picker.value); refresh() }
+            .setPositiveButton("Set") { _, _ -> Prefs.setOverrideThreshold(this, (picker.value + 1) * 5); refresh() }
             .setNeutralButton("Use settings") { _, _ -> Prefs.setOverrideThreshold(this, -1); refresh() }
             .setNegativeButton("Cancel", null)
             .show()

@@ -11,6 +11,10 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.5 - picker in steps of 5
+- Owner asked for 5% steps instead of every digit, so the wheel is quicker to spin. Wheel now shows 5, 10 ... 100.
+- 1.4 observed on the watch by the owner: installed and "works ok"; the wrist-down test (Test in 1 minute) was still waiting at the time of writing.
+
 ## 1.4 - proper level picker
 - The alert-level button now opens a swipe wheel (5 to 100) with Set / Use settings / Cancel, replacing tap-to-cycle from 1.3 (clumsy; owner asked for a dial).
 
