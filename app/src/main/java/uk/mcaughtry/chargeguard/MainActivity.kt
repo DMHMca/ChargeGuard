@@ -2,6 +2,7 @@ package uk.mcaughtry.chargeguard
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,6 +17,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.NumberPicker
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -28,6 +30,7 @@ import java.util.Date
  */
 class MainActivity : Activity() {
     private lateinit var status: TextView
+    private lateinit var levelBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +73,9 @@ class MainActivity : Activity() {
             text = "Test alert"
             setOnClickListener { startActivity(Intent(context, AlertActivity::class.java)) }
         }
+        levelBtn = Button(this).apply {
+            setOnClickListener { pickLevel() }
+        }
         val timedBtn = Button(this).apply {
             text = "Test in 1 minute"
             setOnClickListener {
@@ -83,7 +89,7 @@ class MainActivity : Activity() {
                 }.start()
             }
         }
-        listOf(status, refreshBtn, timedBtn, testBtn).forEach { column.addView(it) }
+        listOf(status, refreshBtn, levelBtn, timedBtn, testBtn).forEach { column.addView(it) }
         setContentView(ScrollView(this).apply { addView(column) })
 
         Scheduler.scheduleDaily(this)
@@ -92,6 +98,26 @@ class MainActivity : Activity() {
         askForOverlay()
         // Pick up any new settings on every open.
         Thread { if (Prefs.fetch(this)) { Scheduler.scheduleDaily(this); runOnUiThread { refresh() } } }.start()
+    }
+
+    /** A swipe wheel (steps of 5) that sets the alert level on the watch itself. */
+    private fun pickLevel() {
+        val labels = Array(20) { ((it + 1) * 5).toString() }
+        val current = Prefs.threshold(this).coerceIn(5, 100)
+        val picker = NumberPicker(this).apply {
+            minValue = 0
+            maxValue = labels.size - 1
+            displayedValues = labels
+            value = (Math.round(current / 5f) - 1).coerceIn(0, labels.size - 1)
+            wrapSelectorWheel = false
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Alert at (%)")
+            .setView(picker)
+            .setPositiveButton("Set") { _, _ -> Prefs.setWatchThreshold(this, (picker.value + 1) * 5); refresh() }
+            .setNeutralButton("Use file") { _, _ -> Prefs.setWatchThreshold(this, -1); refresh() }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     /** A short buzz so a button press visibly did something. */
@@ -138,12 +164,15 @@ class MainActivity : Activity() {
 
     private fun refresh() {
         val (pct, plugged) = Alert.batteryStatus(this)
+        val onWatch = Prefs.watchThreshold(this)
+        levelBtn.text = if (onWatch >= 0) "Alert at $onWatch% (set here)"
+        else "Alert at ${Prefs.fileThreshold(this)}% (from file)"
         val info = packageManager.getPackageInfo(packageName, 0)
         val last = Prefs.lastFetch(this)
         val fetched = if (last == 0L) "never fetched"
         else DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(Date(last))
         status.text = "Battery $pct%" + (if (plugged) " (charging)" else "") + "\n" +
-            (if (Prefs.enabled(this)) "Armed: %02d:00, at %d%% or less".format(Prefs.hour(this), Prefs.threshold(this))
+            (if (Prefs.enabled(this)) "Armed: %02d:00, at %d%% or less%s".format(Prefs.hour(this), Prefs.threshold(this), if (onWatch >= 0) " (set on watch)" else "")
             else "Off") + "\n" +
             "Takeover: " + (if (fullScreenAllowed()) "allowed" else "NOT allowed") + "\n" +
             "Over apps: " + (if (overlayAllowed()) "allowed" else "NOT allowed") + "\n" +

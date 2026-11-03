@@ -20,8 +20,18 @@ object Prefs {
         JSONObject()
     }
 
-    /** The alert level, from the settings file only. */
-    fun threshold(c: Context) = json(c).optInt("threshold", Config.DEFAULT_THRESHOLD)
+    /** Alert level from the settings file. */
+    fun fileThreshold(c: Context) = json(c).optInt("threshold", Config.DEFAULT_THRESHOLD)
+
+    /** Alert level chosen on the watch with the wheel, or -1 if the settings file is in charge. */
+    fun watchThreshold(c: Context) = p(c).getInt("watchThreshold", -1)
+    fun setWatchThreshold(c: Context, v: Int) = p(c).edit().putInt("watchThreshold", v).apply()
+
+    /** The level actually used: the watch's own choice if there is one, else the settings file. */
+    fun threshold(c: Context): Int {
+        val w = watchThreshold(c)
+        return if (w >= 0) w else fileThreshold(c)
+    }
 
     fun hour(c: Context) = json(c).optInt("hour", Config.DEFAULT_HOUR)
     fun enabled(c: Context) = json(c).optBoolean("enabled", true)

@@ -23,7 +23,7 @@ The app lives on the watch because a watch can read its own battery reliably and
 
 ## How updates work (two speeds)
 
-**Fast: no install.** `config/settings.json` is the single source of truth for threshold, check hour, on/off, re-check delay, last re-check hour, flash speed, alert wording and vibration pattern. The watch fetches it from `Config.SETTINGS_URL` every time the app opens and just before each evening check, and keeps the last good copy. To change behaviour, edit that file, bump its `version` number, and push to `main`. GitHub's file cache can take a few minutes. The watch's status screen shows "Settings vN" and when it last fetched, so the owner can see it arrived. The file only works while the repository is public, so keep it public (or move the file somewhere public and change `Config.SETTINGS_URL`).
+**Fast: no install.** `config/settings.json` is the single source of truth for threshold, check hour, on/off, re-check delay, last re-check hour, flash speed, alert wording and vibration pattern. The watch fetches it from `Config.SETTINGS_URL` every time the app opens and just before each evening check, and keeps the last good copy. To change behaviour, edit that file, bump its `version` number, and push to `main`. GitHub's file cache can take a few minutes. The watch's status screen shows "Settings vN" and when it last fetched, so the owner can see it arrived. Exception: the alert level can also be set on the watch with the wheel; if so, that value beats `threshold` in the file until "Use file" is chosen, and the status screen says "(set on watch)". The file only works while the repository is public, so keep it public (or move the file somewhere public and change `Config.SETTINGS_URL`).
 
 **Slower: new build.** Any change to Kotlin code needs a new APK on the watch. A GitHub Actions job (`.github/workflows/build.yml`) builds a debug APK on every push that changes the app, and publishes it as a downloadable artifact. Until the Google Play route is set up, install it with `adb` (see `scripts/deploy.sh`). The planned end state is the Google Play internal testing track, where the watch updates itself from the Play Store.
 
@@ -46,7 +46,7 @@ The app lives on the watch because a watch can read its own battery reliably and
 - `AlarmReceiver.kt`: fetches settings, re-arms tomorrow's alarm, then checks the battery.
 - `Alert.kt`: battery reading, the full-screen notification, and a direct launch of the flashing screen (needs "display over other apps").
 - `AlertActivity.kt`: the flashing screen and vibration.
-- `MainActivity.kt`: status screen, "Refresh settings", "Test in 1 minute" (always fires, whatever the battery, for tests and demos) and "Test alert". The alert level comes only from the settings file; there is no on-watch override.
+- `MainActivity.kt`: status screen, "Refresh settings", "Test in 1 minute" (always fires, whatever the battery, for tests and demos) and "Test alert". The alert level wheel (steps of 5) sets the level on the watch; "Use file" returns control to the settings file. The button and status line say which is in force.
 - `docs/CHANGELOG.md`: change and test log.
 - `OVERVIEW.md`: plain-English overview.
 

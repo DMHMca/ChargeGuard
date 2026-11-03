@@ -11,6 +11,11 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.14 - alert level wheel back, as a permanent setting
+- Owner wants to set the level on the watch without going to GitHub. Brought the wheel back (steps of 5) but as a plain, visible setting: "Set" stores the level on the watch, "Use file" hands control back to config/settings.json.
+- The button says "Alert at X% (set here)" or "(from file)", and the Armed line adds "(set on watch)", so it is never a hidden override. A watch-set level beats `threshold` in the file.
+- Stored under a new key, so the old 45 test override from earlier builds does not come back. "Test in 1 minute" still always fires.
+
 ## 1.13 - test override removed; "Test in 1 minute" always fires
 - Owner: the on-watch level override is no longer needed (the alert is proven) and would silently beat the settings file. Removed the picker and override entirely; the alert level now comes only from config/settings.json.
 - "Test in 1 minute" now always fires whatever the battery, so a test or demonstration needs no override.
