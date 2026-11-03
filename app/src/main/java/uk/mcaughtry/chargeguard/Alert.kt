@@ -62,6 +62,19 @@ object Alert {
             .setAutoCancel(true)
             .build()
         nm.notify(NOTIFICATION_ID, n)
+
+        // Also launch the flashing screen directly. From the background this only works
+        // if "display over other apps" is allowed, but then it works even when the screen
+        // is on, which the full-screen notification above does not. If it is refused, the
+        // notification remains the fallback.
+        try {
+            c.startActivity(
+                Intent(c, AlertActivity::class.java)
+                    .putExtra("pct", pct)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            )
+        } catch (_: Exception) {
+        }
     }
 
     fun clear(c: Context) {

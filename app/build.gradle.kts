@@ -11,8 +11,8 @@ android {
         applicationId = "uk.mcaughtry.chargeguard"
         minSdk = 30
         targetSdk = 34
-        versionCode = 9
-        versionName = "1.8"
+        versionCode = 10
+        versionName = "1.9"
     }
 
     // A fixed debug key, so every build is signed the same and installs over the last

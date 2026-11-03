@@ -11,6 +11,11 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.9 - alert must flash even if the screen is on
+- Owner test on 1.8: vibrated but no flashing; the watch may not have been dark. A full-screen notification only takes over an idle screen; with the screen on Android shows a pop-up instead, so the alert depended on screen state.
+- Now the app also launches the flashing screen directly when the alarm fires. This needs "display over other apps" (SYSTEM_ALERT_WINDOW); declared, requested once on first open, and shown as "Over apps" on the status screen. Grant by hand if the watch has no such screen: `adb shell appops set uk.mcaughtry.chargeguard SYSTEM_ALERT_WINDOW allow`.
+- Untested on the watch.
+
 ## 1.8 - four timestamps on the status screen
 - Correction: the owner's 1.4 test had no confirmation buzz, so the vibration was the alert's notification, and the flashing screen came 1-2 minutes after it. The delay is in the takeover launching, not (only) the alarm.
 - Status screen now shows Due, Fired (alarm delivered), Posted (notification posted) and Shown (flashing screen created), to show which step is late.

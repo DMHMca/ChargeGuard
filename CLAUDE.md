@@ -44,7 +44,7 @@ The app lives on the watch because a watch can read its own battery reliably and
 - `Prefs.kt`: reads the cached settings and fetches new ones.
 - `Scheduler.kt`: the daily alarm (uses `setAlarmClock`, which needs the `USE_EXACT_ALARM` permission, with an inexact fallback) and the re-check.
 - `AlarmReceiver.kt`: fetches settings, re-arms tomorrow's alarm, then checks the battery.
-- `Alert.kt`: battery reading and the full-screen notification.
+- `Alert.kt`: battery reading, the full-screen notification, and a direct launch of the flashing screen (needs "display over other apps").
 - `AlertActivity.kt`: the flashing screen and vibration.
 - `MainActivity.kt`: status screen, "Refresh settings", test alert-level override, "Test in 1 minute", "Test alert". A test override (stored on the watch) beats the settings file until "Use settings" is chosen in its picker; the screen shows (TEST) while it is on.
 - `docs/CHANGELOG.md`: change and test log.
