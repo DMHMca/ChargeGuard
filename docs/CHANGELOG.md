@@ -11,6 +11,11 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.13 - test override removed; "Test in 1 minute" always fires
+- Owner: the on-watch level override is no longer needed (the alert is proven) and would silently beat the settings file. Removed the picker and override entirely; the alert level now comes only from config/settings.json.
+- "Test in 1 minute" now always fires whatever the battery, so a test or demonstration needs no override.
+- Built-in fallback threshold aligned to 50 (the file's value). Supersedes 1.12 (same changes plus this).
+
 ## Settings v5 - threshold 50%
 - Owner: 50% at 7pm should last the night. Changed `threshold` from 45 to 50 in the settings file only, so it reaches any installed build with no install. (The built-in fallback in Config.kt is still 45 and will be aligned in the next build.)
 - Note: a test override left set on the watch beats the file until "Use settings" is chosen in the alert-level picker.

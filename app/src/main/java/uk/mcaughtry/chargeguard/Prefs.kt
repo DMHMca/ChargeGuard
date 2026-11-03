@@ -20,18 +20,9 @@ object Prefs {
         JSONObject()
     }
 
-    /** Alert level from the settings file (ignores any test override). */
-    fun settingsThreshold(c: Context) = json(c).optInt("threshold", Config.DEFAULT_THRESHOLD)
+    /** The alert level, from the settings file only. */
+    fun threshold(c: Context) = json(c).optInt("threshold", Config.DEFAULT_THRESHOLD)
 
-    /** Test override set on the watch itself, or -1 when none. Overrides the file. */
-    fun overrideThreshold(c: Context) = p(c).getInt("overrideThreshold", -1)
-    fun setOverrideThreshold(c: Context, v: Int) = p(c).edit().putInt("overrideThreshold", v).apply()
-
-    /** The level actually used: the test override if set, else the settings file. */
-    fun threshold(c: Context): Int {
-        val o = overrideThreshold(c)
-        return if (o >= 0) o else settingsThreshold(c)
-    }
     fun hour(c: Context) = json(c).optInt("hour", Config.DEFAULT_HOUR)
     fun enabled(c: Context) = json(c).optBoolean("enabled", true)
     fun recheckEnabled(c: Context) = json(c).optBoolean("recheckEnabled", Config.RECHECK_ENABLED)

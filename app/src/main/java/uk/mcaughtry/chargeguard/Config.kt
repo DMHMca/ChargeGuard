@@ -11,7 +11,7 @@ object Config {
         "https://raw.githubusercontent.com/DMHMca/chargeguard/main/config/settings.json"
     const val FETCH_TIMEOUT_MS = 3000
 
-    const val DEFAULT_THRESHOLD = 45        // alert at this % or less
+    const val DEFAULT_THRESHOLD = 50        // alert at this % or less
     const val DEFAULT_HOUR = 19             // daily check, 24h clock
     const val RECHECK_ENABLED = false       // alert once only; true re-checks after a tap-dismiss
     const val RECHECK_MINUTES = 30          // gap between re-checks, if enabled

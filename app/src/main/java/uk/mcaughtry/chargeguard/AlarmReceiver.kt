@@ -11,11 +11,13 @@ class AlarmReceiver : BroadcastReceiver() {
             try {
                 if (intent.action == Scheduler.ACTION_CHECK) {
                     Prefs.recordFired(context)
-                    val daily = intent.getIntExtra("code", Scheduler.DAILY) == Scheduler.DAILY
+                    val code = intent.getIntExtra("code", Scheduler.DAILY)
+                    val daily = code == Scheduler.DAILY
                     // 1. Re-arm tomorrow's alarm first, using the saved hour.
                     if (daily) Scheduler.scheduleDaily(context, afterToday = true)
                     // 2. Alert straight away from the saved settings. Never wait on the network.
-                    Alert.checkAndAlert(context)
+                    if (code == Scheduler.TEST) Alert.show(context, Alert.batteryStatus(context).first)  // a test always fires
+                    else Alert.checkAndAlert(context)
                     // 3. Only then fetch fresh settings for next time, and re-arm in case the hour changed.
                     if (Prefs.fetch(context) && daily) Scheduler.scheduleDaily(context, afterToday = true)
                 } else {
