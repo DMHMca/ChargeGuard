@@ -11,6 +11,10 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.11 - no alerts late in the evening
+- Owner: the 19:00 alert was tapped away, and a re-check alert came at 19:30 (below threshold). They do not want alerts while asleep; re-checks used to run until 23:00.
+- New setting `lastRecheckHour` in config/settings.json (default 21): re-checks stop before this hour, so the last possible re-check alert is before 21:00. The 19:00 alert itself is unaffected. Needs this build installed once; after that the hour can be changed from the settings file (settings v3).
+
 ## 1.10 - "Refresh settings" now says what happened
 - Owner pressed Refresh after settings v2 was pushed: still showed v1 and there was no message, so success and failure looked the same.
 - Now it buzzes and shows "Settings updated: vN" or "Couldn't reach GitHub. Check the watch's Wi-Fi."

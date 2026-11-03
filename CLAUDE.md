@@ -14,7 +14,7 @@ Read this first. It records what the app is, how it is built and updated, the ru
 
 ## What the app is
 
-A standalone Wear OS app. The watch needs charging daily, and if it dies overnight the sleep tracking fails. Every evening (default 19:00) the watch checks its own battery. If it is at or below the threshold (default 45%) and not on a charger, the screen is taken over: full brightness, flashing red and white, with a long repeating vibration. It stops when the watch is put on the charger. If tapped away instead, it checks again after 30 minutes, up to 23:00.
+A standalone Wear OS app. The watch needs charging daily, and if it dies overnight the sleep tracking fails. Every evening (default 19:00) the watch checks its own battery. If it is at or below the threshold (default 45%) and not on a charger, the screen is taken over: full brightness, flashing red and white, with a long repeating vibration. It stops when the watch is put on the charger. If tapped away instead, it checks again after 30 minutes, but never at or after `lastRecheckHour` (default 21:00), so it cannot go off while the owner is asleep.
 
 The app lives on the watch because a watch can read its own battery reliably and the owner nearly always wears it. The phone cannot make the watch flash and may be in another room.
 
@@ -23,7 +23,7 @@ The app lives on the watch because a watch can read its own battery reliably and
 
 ## How updates work (two speeds)
 
-**Fast: no install.** `config/settings.json` is the single source of truth for threshold, check hour, on/off, re-check delay, flash speed, alert wording and vibration pattern. The watch fetches it from `Config.SETTINGS_URL` every time the app opens and just before each evening check, and keeps the last good copy. To change behaviour, edit that file, bump its `version` number, and push to `main`. GitHub's file cache can take a few minutes. The watch's status screen shows "Settings vN" and when it last fetched, so the owner can see it arrived. The file only works while the repository is public, so keep it public (or move the file somewhere public and change `Config.SETTINGS_URL`).
+**Fast: no install.** `config/settings.json` is the single source of truth for threshold, check hour, on/off, re-check delay, last re-check hour, flash speed, alert wording and vibration pattern. The watch fetches it from `Config.SETTINGS_URL` every time the app opens and just before each evening check, and keeps the last good copy. To change behaviour, edit that file, bump its `version` number, and push to `main`. GitHub's file cache can take a few minutes. The watch's status screen shows "Settings vN" and when it last fetched, so the owner can see it arrived. The file only works while the repository is public, so keep it public (or move the file somewhere public and change `Config.SETTINGS_URL`).
 
 **Slower: new build.** Any change to Kotlin code needs a new APK on the watch. A GitHub Actions job (`.github/workflows/build.yml`) builds a debug APK on every push that changes the app, and publishes it as a downloadable artifact. Until the Google Play route is set up, install it with `adb` (see `scripts/deploy.sh`). The planned end state is the Google Play internal testing track, where the watch updates itself from the Play Store.
 

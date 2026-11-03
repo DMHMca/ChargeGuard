@@ -34,6 +34,7 @@ object Prefs {
     }
     fun hour(c: Context) = json(c).optInt("hour", Config.DEFAULT_HOUR)
     fun enabled(c: Context) = json(c).optBoolean("enabled", true)
+    fun lastRecheckHour(c: Context) = json(c).optInt("lastRecheckHour", Config.LAST_RECHECK_HOUR)
     fun recheckMinutes(c: Context) = json(c).optInt("recheckMinutes", Config.RECHECK_MINUTES)
     fun flashIntervalMs(c: Context) = json(c).optLong("flashIntervalMs", Config.FLASH_INTERVAL_MS)
     fun alertText(c: Context) = json(c).optString("alertText", Config.ALERT_TEXT)

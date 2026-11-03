@@ -47,7 +47,7 @@ object Scheduler {
         if (!Prefs.enabled(c)) return
         val t = System.currentTimeMillis() + delayMinutes * 60_000L
         val hour = Calendar.getInstance().apply { timeInMillis = t }.get(Calendar.HOUR_OF_DAY)
-        if (hour >= Config.LAST_RECHECK_HOUR || hour < Prefs.hour(c)) return
+        if (hour >= Prefs.lastRecheckHour(c) || hour < Prefs.hour(c)) return
         setAt(c, t, RECHECK)
     }
 
