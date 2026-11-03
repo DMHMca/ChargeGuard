@@ -35,6 +35,7 @@ object Alert {
      * the fallback if the system refuses the full-screen part.
      */
     fun show(c: Context, pct: Int) {
+        Prefs.recordPosted(c)
         val nm = c.getSystemService(NotificationManager::class.java)
         val channel = NotificationChannel(CHANNEL, "Charge alert", NotificationManager.IMPORTANCE_HIGH).apply {
             enableVibration(true)

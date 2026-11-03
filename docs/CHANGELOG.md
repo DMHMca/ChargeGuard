@@ -11,6 +11,10 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.8 - four timestamps on the status screen
+- Correction: the owner's 1.4 test had no confirmation buzz, so the vibration was the alert's notification, and the flashing screen came 1-2 minutes after it. The delay is in the takeover launching, not (only) the alarm.
+- Status screen now shows Due, Fired (alarm delivered), Posted (notification posted) and Shown (flashing screen created), to show which step is late.
+
 ## 1.7 - alert no longer waits for the network
 - Owner test on 1.6: full flash and vibrate worked, but about two minutes late. Suspected cause: the alarm receiver fetched settings first, and a sleeping watch can stall on the address lookup (not covered by the connect/read timeouts).
 - Now: re-arm tomorrow, alert immediately from saved settings, then fetch fresh settings afterwards.

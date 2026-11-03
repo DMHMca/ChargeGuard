@@ -153,7 +153,8 @@ class MainActivity : Activity() {
             (if (Prefs.enabled(this)) "Armed: %02d:00, at %d%% or less%s".format(Prefs.hour(this), Prefs.threshold(this), if (override >= 0) " (TEST)" else "")
             else "Off") + "\n" +
             "Takeover: " + (if (fullScreenAllowed()) "allowed" else "NOT allowed") + "\n" +
-            "Test due ${timeText(Prefs.lastDue(this))}\nAlarm fired ${timeText(Prefs.lastFired(this))}\n" +
+            "Due ${timeText(Prefs.lastDue(this))}\nFired ${timeText(Prefs.lastFired(this))}\n" +
+            "Posted ${timeText(Prefs.lastPosted(this))}\nShown ${timeText(Prefs.lastShown(this))}\n" +
             "Settings v${Prefs.settingsVersion(this)}\n$fetched\n" +
             "App v${info.versionName} (${info.longVersionCode})"
     }

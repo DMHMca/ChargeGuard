@@ -47,6 +47,10 @@ object Prefs {
     /** Timing records so the status screen can show a late alarm. */
     fun recordDue(c: Context, ms: Long) = p(c).edit().putLong("lastDue", ms).apply()
     fun recordFired(c: Context) = p(c).edit().putLong("lastFired", System.currentTimeMillis()).apply()
+    fun recordPosted(c: Context) = p(c).edit().putLong("lastPosted", System.currentTimeMillis()).apply()
+    fun recordShown(c: Context) = p(c).edit().putLong("lastShown", System.currentTimeMillis()).apply()
+    fun lastPosted(c: Context) = p(c).getLong("lastPosted", 0L)
+    fun lastShown(c: Context) = p(c).getLong("lastShown", 0L)
     fun lastDue(c: Context) = p(c).getLong("lastDue", 0L)
     fun lastFired(c: Context) = p(c).getLong("lastFired", 0L)
 
