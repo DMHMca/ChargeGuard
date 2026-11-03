@@ -14,7 +14,7 @@ Read this first. It records what the app is, how it is built and updated, the ru
 
 ## What the app is
 
-A standalone Wear OS app. The watch needs charging daily, and if it dies overnight the sleep tracking fails. Every evening (default 19:00) the watch checks its own battery. If it is at or below the threshold (default 45%) and not on a charger, the screen is taken over: full brightness, flashing red and white, with a long repeating vibration. It stops when the watch is put on the charger. It alerts once only. An optional re-check after a tap-dismiss exists (`recheckEnabled` in the settings file, OFF by default; if on, every `recheckMinutes` but never at or after `lastRecheckHour`), because the owner does not want repeat alerts at a concert or in bed.
+A standalone Wear OS app. The watch needs charging daily, and if it dies overnight the sleep tracking fails. Every evening (default 19:00) the watch checks its own battery. If it is at or below the threshold (the settings file now says 50%; the built-in fallback is 45%) and not on a charger, the screen is taken over: full brightness, flashing red and white, with a long repeating vibration. It stops when the watch is put on the charger. It alerts once only. An optional re-check after a tap-dismiss exists (`recheckEnabled` in the settings file, OFF by default; if on, every `recheckMinutes` but never at or after `lastRecheckHour`), because the owner does not want repeat alerts at a concert or in bed.
 
 The app lives on the watch because a watch can read its own battery reliably and the owner nearly always wears it. The phone cannot make the watch flash and may be in another room.
 

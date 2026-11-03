@@ -11,6 +11,10 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## Settings v5 - threshold 50%
+- Owner: 50% at 7pm should last the night. Changed `threshold` from 45 to 50 in the settings file only, so it reaches any installed build with no install. (The built-in fallback in Config.kt is still 45 and will be aligned in the next build.)
+- Note: a test override left set on the watch beats the file until "Use settings" is chosen in the alert-level picker.
+
 ## 1.12 - one alert only (re-checks off by default)
 - Owner: the 19:00 test fired exactly on schedule. A re-check alert is not wanted (could go off at a concert or in bed); one alert at 19:00 is enough, and the threshold can be adjusted if it proves too low.
 - New setting `recheckEnabled` (default false) in config/settings.json. When true, the earlier behaviour returns: after a tap-dismiss it re-checks every `recheckMinutes`, never at or after `lastRecheckHour`. Needs this build once (settings v4). Supersedes 1.11 (the same build plus this).
