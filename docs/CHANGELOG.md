@@ -10,7 +10,9 @@ until it has been seen working.
 - Does the background settings fetch work at 19:00, or does the watch have no network then?
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
-- Repo is private, but the watch fetches settings from a raw GitHub URL, which needs a public repo. Decide.
+
+## Repo made public
+- Needed so the watch can fetch config/settings.json from the raw GitHub URL. Confirmed the URL now returns the file.
 
 ## 1.0 (settings v1) - first version, untested
 - Watch-only app. Daily check at 19:00 via setAlarmClock.

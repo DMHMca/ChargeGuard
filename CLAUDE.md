@@ -18,12 +18,12 @@ A standalone Wear OS app. The watch needs charging daily, and if it dies overnig
 
 The app lives on the watch because a watch can read its own battery reliably and the owner nearly always wears it. The phone cannot make the watch flash and may be in another room.
 
-- Repository: `DMHMca/chargeguard` (private).
+- Repository: `DMHMca/chargeguard` (public by choice, so the watch can fetch its settings file; never commit secrets).
 - Package: `uk.mcaughtry.chargeguard`. The name ChargeGuard is shared by an unrelated hardware product; fine for private use, reconsider before any public listing.
 
 ## How updates work (two speeds)
 
-**Fast: no install.** `config/settings.json` is the single source of truth for threshold, check hour, on/off, re-check delay, flash speed, alert wording and vibration pattern. The watch fetches it from `Config.SETTINGS_URL` every time the app opens and just before each evening check, and keeps the last good copy. To change behaviour, edit that file, bump its `version` number, and push to `main`. GitHub's file cache can take a few minutes. The watch's status screen shows "Settings vN" and when it last fetched, so the owner can see it arrived. The file only works while the repository is public, or while the URL points somewhere public (see Open decisions).
+**Fast: no install.** `config/settings.json` is the single source of truth for threshold, check hour, on/off, re-check delay, flash speed, alert wording and vibration pattern. The watch fetches it from `Config.SETTINGS_URL` every time the app opens and just before each evening check, and keeps the last good copy. To change behaviour, edit that file, bump its `version` number, and push to `main`. GitHub's file cache can take a few minutes. The watch's status screen shows "Settings vN" and when it last fetched, so the owner can see it arrived. The file only works while the repository is public, so keep it public (or move the file somewhere public and change `Config.SETTINGS_URL`).
 
 **Slower: new build.** Any change to Kotlin code needs a new APK on the watch. A GitHub Actions job (`.github/workflows/build.yml`) builds a debug APK on every push that changes the app, and publishes it as a downloadable artifact. Until the Google Play route is set up, install it with `adb` (see `scripts/deploy.sh`). The planned end state is the Google Play internal testing track, where the watch updates itself from the Play Store.
 
@@ -54,7 +54,6 @@ The code was written in a cloud session with no Android SDK and has NEVER been c
 
 ## Open decisions
 
-- **Public or private repo.** The raw settings URL only works if the repo is public (nothing in it is secret). If it stays private, move `config/settings.json` to a small public repo and change `Config.SETTINGS_URL`.
 - **Google Play.** The owner is happy to pay the one-off $25 for a developer account and use the internal testing track, also for future apps. Not set up yet. When it is: switch the build to a signed bundle, upload the first one by hand, then automate uploads from GitHub Actions using a service-account key held as a GitHub secret (never in the repo, never in chat).
 - **Sound** alongside flashing and vibration: not added; ask the owner.
 - **Threshold**: 45% was the owner's figure; 50% may give a safer margin for a full night of sleep tracking.
