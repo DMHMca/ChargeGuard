@@ -11,6 +11,10 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.10 - "Refresh settings" now says what happened
+- Owner pressed Refresh after settings v2 was pushed: still showed v1 and there was no message, so success and failure looked the same.
+- Now it buzzes and shows "Settings updated: vN" or "Couldn't reach GitHub. Check the watch's Wi-Fi."
+
 ## Settings v2 - fast-update test
 - Version bumped from 1 to 2 with no other change, to prove the no-install loop: push to main, press Refresh settings, status shows "Settings v2".
 - Before this: the owner's watch showed "Settings v1", which can only come from a fetched file (the built-in fallback reads v0), so the first fetch is confirmed working.

@@ -56,7 +56,14 @@ class MainActivity : Activity() {
                     val ok = Prefs.fetch(context)
                     Scheduler.scheduleDaily(context)
                     runOnUiThread {
-                        text = if (ok) "Refresh settings" else "No connection; retry"
+                        text = "Refresh settings"
+                        buzz()
+                        Toast.makeText(
+                            context,
+                            if (ok) "Settings updated: v${Prefs.settingsVersion(context)}"
+                            else "Couldn't reach GitHub. Check the watch's Wi-Fi.",
+                            Toast.LENGTH_LONG
+                        ).show()
                         refresh()
                     }
                 }.start()
