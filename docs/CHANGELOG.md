@@ -11,8 +11,11 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.4 - proper level picker
+- The alert-level button now opens a swipe wheel (5 to 100) with Set / Use settings / Cancel, replacing tap-to-cycle from 1.3 (clumsy; owner asked for a dial).
+
 ## 1.3 - test controls on the watch
-- Status screen: "Alert at X%" button cycles a temporary test override (50 to 100, then back to the settings file). Status shows (TEST) while it is on.
+- Status screen: "Alert at X%" button sets a temporary test override (tap-to-cycle in 1.3, a wheel from 1.4). Status shows (TEST) while it is on.
 - "Test in 1 minute" button runs the real alarm path (alarm, battery check, full-screen takeover) so it can be watched with the wrist down.
 - Verified on the watch before this: app opens (1.2), Test alert flashes and vibrates.
 - Not yet verified: the alert waking a dark screen by itself; the settings fetch (user to report the Settings line).

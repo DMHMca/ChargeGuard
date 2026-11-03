@@ -2,6 +2,7 @@ package uk.mcaughtry.chargeguard
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -9,6 +10,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.NumberPicker
 import android.widget.ScrollView
 import android.widget.TextView
 import java.text.DateFormat
@@ -57,12 +59,7 @@ class MainActivity : Activity() {
             setOnClickListener { startActivity(Intent(context, AlertActivity::class.java)) }
         }
         levelBtn = Button(this).apply {
-            setOnClickListener {
-                // Cycle the test override: 50, 55 ... 100, then back to the settings file.
-                val cur = Prefs.overrideThreshold(context)
-                Prefs.setOverrideThreshold(context, if (cur < 0) 50 else if (cur >= 100) -1 else cur + 5)
-                refresh()
-            }
+            setOnClickListener { pickLevel() }
         }
         val timedBtn = Button(this).apply {
             text = "Test in 1 minute"
@@ -78,6 +75,24 @@ class MainActivity : Activity() {
         refresh()
         // Pick up any new settings on every open.
         Thread { if (Prefs.fetch(this)) { Scheduler.scheduleDaily(this); runOnUiThread { refresh() } } }.start()
+    }
+
+    /** A swipe wheel for a test alert level; "Use settings" removes the override. */
+    private fun pickLevel() {
+        val current = Prefs.threshold(this).coerceIn(5, 100)
+        val picker = NumberPicker(this).apply {
+            minValue = 5
+            maxValue = 100
+            value = current
+            wrapSelectorWheel = false
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Alert at (%)")
+            .setView(picker)
+            .setPositiveButton("Set") { _, _ -> Prefs.setOverrideThreshold(this, picker.value); refresh() }
+            .setNeutralButton("Use settings") { _, _ -> Prefs.setOverrideThreshold(this, -1); refresh() }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun refresh() {
