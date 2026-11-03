@@ -35,7 +35,7 @@ The app lives on the watch because a watch can read its own battery reliably and
 2. Bump `version` in `config/settings.json` whenever settings change.
 3. Add an entry to `docs/CHANGELOG.md`: what changed, why, and what was observed on the real watch. Do not mark anything as working until it has been seen working.
 4. Update `OVERVIEW.md` whenever behaviour changes.
-5. Make small commits with plain-English messages and push to `main`. Tell the owner how to see the update.
+5. Make small commits with plain-English messages and push to `main`. Start the commit title with the app version (for example "v1.9: ..."), because GitHub names each build run after its commit title and the owner picks builds from that list. Each run's summary page and its artifact name also show the version. Tell the owner how to see the update.
 
 ## Files
 
