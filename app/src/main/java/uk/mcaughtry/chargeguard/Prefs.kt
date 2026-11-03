@@ -44,6 +44,12 @@ object Prefs {
         return if (a.length() < 2) Config.VIBRATION_PATTERN else LongArray(a.length()) { a.getLong(it) }
     }
 
+    /** Timing records so the status screen can show a late alarm. */
+    fun recordDue(c: Context, ms: Long) = p(c).edit().putLong("lastDue", ms).apply()
+    fun recordFired(c: Context) = p(c).edit().putLong("lastFired", System.currentTimeMillis()).apply()
+    fun lastDue(c: Context) = p(c).getLong("lastDue", 0L)
+    fun lastFired(c: Context) = p(c).getLong("lastFired", 0L)
+
     /** Milliseconds since epoch of the last successful fetch, or 0 if never. */
     fun lastFetch(c: Context) = p(c).getLong("lastFetch", 0L)
 

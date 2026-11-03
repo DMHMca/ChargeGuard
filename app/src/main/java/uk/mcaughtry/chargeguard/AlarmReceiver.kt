@@ -6,16 +6,18 @@ import android.content.Intent
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val pending = goAsync()   // lets us fetch settings before deciding
+        val pending = goAsync()
         Thread {
             try {
                 if (intent.action == Scheduler.ACTION_CHECK) {
-                    Prefs.fetch(context)   // best effort; falls back to the cached copy
-                    // The daily alarm re-arms itself for tomorrow, using any new hour.
-                    if (intent.getIntExtra("code", Scheduler.DAILY) == Scheduler.DAILY) {
-                        Scheduler.scheduleDaily(context)
-                    }
+                    Prefs.recordFired(context)
+                    val daily = intent.getIntExtra("code", Scheduler.DAILY) == Scheduler.DAILY
+                    // 1. Re-arm tomorrow's alarm first, using the saved hour.
+                    if (daily) Scheduler.scheduleDaily(context, afterToday = true)
+                    // 2. Alert straight away from the saved settings. Never wait on the network.
                     Alert.checkAndAlert(context)
+                    // 3. Only then fetch fresh settings for next time, and re-arm in case the hour changed.
+                    if (Prefs.fetch(context) && daily) Scheduler.scheduleDaily(context, afterToday = true)
                 } else {
                     // Boot, app update, timezone change: just re-arm the daily alarm.
                     Scheduler.scheduleDaily(context)

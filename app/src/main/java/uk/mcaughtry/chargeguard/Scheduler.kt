@@ -18,7 +18,7 @@ object Scheduler {
     const val RECHECK = 2
     const val TEST = 3
 
-    fun scheduleDaily(c: Context) {
+    fun scheduleDaily(c: Context, afterToday: Boolean = false) {
         if (!Prefs.enabled(c)) {
             cancel(c, DAILY)
             cancel(c, RECHECK)
@@ -30,6 +30,14 @@ object Scheduler {
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
             if (timeInMillis <= System.currentTimeMillis()) add(Calendar.DAY_OF_YEAR, 1)
+        }
+        if (afterToday) {
+            // Used just after a check: never schedule a second alert for later today.
+            val endOfToday = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 23); set(Calendar.MINUTE, 59)
+                set(Calendar.SECOND, 59); set(Calendar.MILLISECOND, 999)
+            }
+            if (cal.timeInMillis <= endOfToday.timeInMillis) cal.add(Calendar.DAY_OF_YEAR, 1)
         }
         setAt(c, cal.timeInMillis, DAILY)
     }
@@ -45,7 +53,9 @@ object Scheduler {
 
     /** Runs the real alarm path in one minute, for testing with the wrist down. */
     fun scheduleTest(c: Context) {
-        setAt(c, System.currentTimeMillis() + 60_000L, TEST)
+        val due = System.currentTimeMillis() + 60_000L
+        Prefs.recordDue(c, due)
+        setAt(c, due, TEST)
     }
 
     private fun intentFor(c: Context, code: Int) =

@@ -74,10 +74,10 @@ class MainActivity : Activity() {
             setOnClickListener {
                 Scheduler.scheduleTest(context)
                 buzz()
-                Toast.makeText(context, "Test set. Alert in 1 minute: lower your wrist.", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Test set. Alert in 1 minute: let the screen go dark.", Toast.LENGTH_LONG).show()
                 val btn = this@apply
                 object : CountDownTimer(60_000, 1000) {
-                    override fun onTick(msLeft: Long) { btn.text = "Alert in ${msLeft / 1000 + 1}s: wrist down" }
+                    override fun onTick(msLeft: Long) { btn.text = "Alert in ${msLeft / 1000 + 1}s: screen off" }
                     override fun onFinish() { btn.text = "Test in 1 minute" }
                 }.start()
             }
@@ -137,6 +137,9 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun timeText(ms: Long) =
+        if (ms == 0L) "-" else DateFormat.getTimeInstance(DateFormat.MEDIUM).format(Date(ms))
+
     private fun refresh() {
         val (pct, plugged) = Alert.batteryStatus(this)
         val override = Prefs.overrideThreshold(this)
@@ -150,6 +153,7 @@ class MainActivity : Activity() {
             (if (Prefs.enabled(this)) "Armed: %02d:00, at %d%% or less%s".format(Prefs.hour(this), Prefs.threshold(this), if (override >= 0) " (TEST)" else "")
             else "Off") + "\n" +
             "Takeover: " + (if (fullScreenAllowed()) "allowed" else "NOT allowed") + "\n" +
+            "Test due ${timeText(Prefs.lastDue(this))}\nAlarm fired ${timeText(Prefs.lastFired(this))}\n" +
             "Settings v${Prefs.settingsVersion(this)}\n$fetched\n" +
             "App v${info.versionName} (${info.longVersionCode})"
     }

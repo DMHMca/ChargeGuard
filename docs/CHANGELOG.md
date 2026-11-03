@@ -11,6 +11,12 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.7 - alert no longer waits for the network
+- Owner test on 1.6: full flash and vibrate worked, but about two minutes late. Suspected cause: the alarm receiver fetched settings first, and a sleeping watch can stall on the address lookup (not covered by the connect/read timeouts).
+- Now: re-arm tomorrow, alert immediately from saved settings, then fetch fresh settings afterwards.
+- Status screen shows "Test due" and "Alarm fired" times so a late alarm can be told apart from a late alert. Not yet confirmed which it was.
+- "wrist down" wording changed to "screen off".
+
 ## 1.6 - clear test feedback and permission prompt
 - First wrist-down test on 1.4: vibrated only, no flash, no message. Cause found with adb: `appops get ... USE_FULL_SCREEN_INTENT` showed `default` with a recent rejectTime, so Android refused the full-screen takeover. Granting it with `appops set ... allow` was then done by hand (re-test result to be recorded).
 - "Test in 1 minute" now buzzes, shows a message and counts down on the button.
