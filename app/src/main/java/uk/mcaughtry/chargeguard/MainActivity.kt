@@ -3,9 +3,16 @@ package uk.mcaughtry.chargeguard
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
+import android.os.CountDownTimer
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
+import android.provider.Settings
 import android.os.Bundle
 import android.view.Gravity
 import android.widget.Button
@@ -13,6 +20,7 @@ import android.widget.LinearLayout
 import android.widget.NumberPicker
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 import java.text.DateFormat
 import java.util.Date
 
@@ -65,7 +73,13 @@ class MainActivity : Activity() {
             text = "Test in 1 minute"
             setOnClickListener {
                 Scheduler.scheduleTest(context)
-                text = "Due in 1 min: wrist down"
+                buzz()
+                Toast.makeText(context, "Test set. Alert in 1 minute: lower your wrist.", Toast.LENGTH_LONG).show()
+                val btn = this@apply
+                object : CountDownTimer(60_000, 1000) {
+                    override fun onTick(msLeft: Long) { btn.text = "Alert in ${msLeft / 1000 + 1}s: wrist down" }
+                    override fun onFinish() { btn.text = "Test in 1 minute" }
+                }.start()
             }
         }
         listOf(status, refreshBtn, levelBtn, timedBtn, testBtn).forEach { column.addView(it) }
@@ -73,6 +87,7 @@ class MainActivity : Activity() {
 
         Scheduler.scheduleDaily(this)
         refresh()
+        askForFullScreen()
         // Pick up any new settings on every open.
         Thread { if (Prefs.fetch(this)) { Scheduler.scheduleDaily(this); runOnUiThread { refresh() } } }.start()
     }
@@ -98,6 +113,30 @@ class MainActivity : Activity() {
             .show()
     }
 
+    /** A short buzz so a button press visibly did something. */
+    private fun buzz() {
+        val v = if (Build.VERSION.SDK_INT >= 31) getSystemService(VibratorManager::class.java).defaultVibrator
+        else getSystemService(Vibrator::class.java)
+        v.vibrate(VibrationEffect.createOneShot(150, VibrationEffect.DEFAULT_AMPLITUDE))
+    }
+
+    /** Android 14+ must allow full-screen notifications for the alert to take over a dark screen. */
+    private fun fullScreenAllowed(): Boolean =
+        Build.VERSION.SDK_INT < 34 || getSystemService(NotificationManager::class.java).canUseFullScreenIntent()
+
+    /** Opens the permission screen once if it is not allowed. */
+    private fun askForFullScreen() {
+        if (fullScreenAllowed()) return
+        val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
+        if (prefs.getBoolean("askedFullScreen", false)) return
+        prefs.edit().putBoolean("askedFullScreen", true).apply()
+        try {
+            startActivity(Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT, Uri.parse("package:$packageName")))
+        } catch (_: Exception) {
+            // This watch has no such screen; the status line will say so.
+        }
+    }
+
     private fun refresh() {
         val (pct, plugged) = Alert.batteryStatus(this)
         val override = Prefs.overrideThreshold(this)
@@ -110,6 +149,7 @@ class MainActivity : Activity() {
         status.text = "Battery $pct%" + (if (plugged) " (charging)" else "") + "\n" +
             (if (Prefs.enabled(this)) "Armed: %02d:00, at %d%% or less%s".format(Prefs.hour(this), Prefs.threshold(this), if (override >= 0) " (TEST)" else "")
             else "Off") + "\n" +
+            "Takeover: " + (if (fullScreenAllowed()) "allowed" else "NOT allowed") + "\n" +
             "Settings v${Prefs.settingsVersion(this)}\n$fetched\n" +
             "App v${info.versionName} (${info.longVersionCode})"
     }

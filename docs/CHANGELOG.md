@@ -11,6 +11,11 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.6 - clear test feedback and permission prompt
+- First wrist-down test on 1.4: vibrated only, no flash, no message. Cause found with adb: `appops get ... USE_FULL_SCREEN_INTENT` showed `default` with a recent rejectTime, so Android refused the full-screen takeover. Granting it with `appops set ... allow` was then done by hand (re-test result to be recorded).
+- "Test in 1 minute" now buzzes, shows a message and counts down on the button.
+- Status screen has a "Takeover: allowed / NOT allowed" line; the app opens the permission screen once on first run if not allowed (the screen may not exist on every watch; untested).
+
 ## 1.5 - picker in steps of 5
 - Owner asked for 5% steps instead of every digit, so the wheel is quicker to spin. Wheel now shows 5, 10 ... 100.
 - 1.4 observed on the watch by the owner: installed and "works ok"; the wrist-down test (Test in 1 minute) was still waiting at the time of writing.
