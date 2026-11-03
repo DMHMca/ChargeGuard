@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "enabled": true,
+  "threshold": 45,
+  "hour": 19,
+  "recheckMinutes": 30,
+  "flashIntervalMs": 400,
+  "alertText": "CHARGE\nWATCH",
+  "vibrationPattern": [0, 700, 250, 700, 250, 1400, 600]
+}

@@ -1,0 +1,52 @@
+package uk.mcaughtry.chargeguard
+
+import android.content.Context
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
+
+/**
+ * The watch's settings. The single source of truth is config/settings.json on
+ * GitHub; the last good copy is cached on the watch so a missing connection at
+ * check time never stops the alert. Any field missing from the file falls back
+ * to Config.
+ */
+object Prefs {
+    private fun p(c: Context) = c.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+
+    private fun json(c: Context): JSONObject = try {
+        JSONObject(p(c).getString("remote", "{}") ?: "{}")
+    } catch (_: Exception) {
+        JSONObject()
+    }
+
+    fun threshold(c: Context) = json(c).optInt("threshold", Config.DEFAULT_THRESHOLD)
+    fun hour(c: Context) = json(c).optInt("hour", Config.DEFAULT_HOUR)
+    fun enabled(c: Context) = json(c).optBoolean("enabled", true)
+    fun recheckMinutes(c: Context) = json(c).optInt("recheckMinutes", Config.RECHECK_MINUTES)
+    fun flashIntervalMs(c: Context) = json(c).optLong("flashIntervalMs", Config.FLASH_INTERVAL_MS)
+    fun alertText(c: Context) = json(c).optString("alertText", Config.ALERT_TEXT)
+    fun settingsVersion(c: Context) = json(c).optInt("version", 0)
+
+    fun vibration(c: Context): LongArray {
+        val a = json(c).optJSONArray("vibrationPattern") ?: return Config.VIBRATION_PATTERN
+        return if (a.length() < 2) Config.VIBRATION_PATTERN else LongArray(a.length()) { a.getLong(it) }
+    }
+
+    /** Milliseconds since epoch of the last successful fetch, or 0 if never. */
+    fun lastFetch(c: Context) = p(c).getLong("lastFetch", 0L)
+
+    /** Blocking network call: run off the main thread. True if fresh settings were saved. */
+    fun fetch(c: Context): Boolean = try {
+        val url = URL(Config.SETTINGS_URL + "?t=" + System.currentTimeMillis())
+        val conn = url.openConnection() as HttpURLConnection
+        conn.connectTimeout = Config.FETCH_TIMEOUT_MS
+        conn.readTimeout = Config.FETCH_TIMEOUT_MS
+        val text = conn.inputStream.bufferedReader().use { it.readText() }
+        JSONObject(text)   // reject anything that is not valid JSON
+        p(c).edit().putString("remote", text).putLong("lastFetch", System.currentTimeMillis()).apply()
+        true
+    } catch (_: Exception) {
+        false
+    }
+}
