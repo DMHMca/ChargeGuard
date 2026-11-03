@@ -7,8 +7,10 @@ import android.content.Intent
 import java.util.Calendar
 
 /**
- * Uses setAlarmClock, which is exact, survives Doze, and needs no special
- * "exact alarm" permission. The trade-off is a small alarm icon on the watch.
+ * Uses setAlarmClock, which is exact and survives Doze, but Android requires the
+ * USE_EXACT_ALARM permission for it (declared in the manifest). If the system still
+ * refuses, we fall back to an inexact alarm rather than crash; it can fire a few
+ * minutes late. The trade-off is a small alarm icon on the watch.
  */
 object Scheduler {
     const val ACTION_CHECK = "uk.mcaughtry.chargeguard.CHECK"
@@ -52,7 +54,11 @@ object Scheduler {
         val show = PendingIntent.getActivity(
             c, 0, Intent(c, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE
         )
-        am.setAlarmClock(AlarmManager.AlarmClockInfo(millis, show), trigger)
+        try {
+            am.setAlarmClock(AlarmManager.AlarmClockInfo(millis, show), trigger)
+        } catch (_: SecurityException) {
+            am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, trigger)
+        }
     }
 
     private fun cancel(c: Context, code: Int) {

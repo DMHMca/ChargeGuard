@@ -40,7 +40,7 @@ The app lives on the watch because a watch can read its own battery reliably and
 - `config/settings.json`: live settings, fetched by the watch.
 - `app/src/main/java/uk/mcaughtry/chargeguard/Config.kt`: built-in fallbacks and the settings URL.
 - `Prefs.kt`: reads the cached settings and fetches new ones.
-- `Scheduler.kt`: the daily alarm (uses `setAlarmClock`, exact, no special permission) and the re-check.
+- `Scheduler.kt`: the daily alarm (uses `setAlarmClock`, which needs the `USE_EXACT_ALARM` permission, with an inexact fallback) and the re-check.
 - `AlarmReceiver.kt`: fetches settings, re-arms tomorrow's alarm, then checks the battery.
 - `Alert.kt`: battery reading and the full-screen notification.
 - `AlertActivity.kt`: the flashing screen and vibration.
