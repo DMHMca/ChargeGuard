@@ -52,10 +52,10 @@ The app lives on the watch because a watch can read its own battery reliably and
 
 ## Status
 
-The code was written in a cloud session with no Android SDK and has NEVER been compiled or run on a watch. The first GitHub Actions build is the first real compile; expect small fixes. Key things to test on the real watch: that the alert fires from a dimmed or locked screen at the check time, that Wear OS grants the full-screen notification permission, and that the settings fetch works in the background at 19:00.
+Built by GitHub Actions, installed on the owner's Pixel Watch 3 with adb, and seen working: the app opens, and "Test alert" flashes and vibrates. Not yet seen working: the alert waking a dark screen by itself via "Test in 1 minute" (the key test), the full-screen permission being granted for the background case, and the settings file fetch reported on the status screen. Check `docs/CHANGELOG.md` for the latest.
 
 ## Open decisions
 
-- **Google Play.** The owner is happy to pay the one-off $25 for a developer account and use the internal testing track, also for future apps. Not set up yet. When it is: switch the build to a signed bundle, upload the first one by hand, then automate uploads from GitHub Actions using a service-account key held as a GitHub secret (never in the repo, never in chat).
+- **Google Play.** The owner is happy to pay the one-off $25 for a developer account and use the internal testing track, also for future apps. Developer account created on 3 November 2026; waiting for Google's identity and phone verification, after which an app can be created. When it is: switch the build to a signed bundle, upload the first one by hand, then automate uploads from GitHub Actions using a service-account key held as a GitHub secret (never in the repo, never in chat).
 - **Sound** alongside flashing and vibration: not added; ask the owner.
 - **Threshold**: 45% was the owner's figure; 50% may give a safer margin for a full night of sleep tracking.
