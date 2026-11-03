@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "enabled": true,
   "threshold": 45,
   "hour": 19,

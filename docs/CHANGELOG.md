@@ -11,6 +11,10 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## Settings v2 - fast-update test
+- Version bumped from 1 to 2 with no other change, to prove the no-install loop: push to main, press Refresh settings, status shows "Settings v2".
+- Before this: the owner's watch showed "Settings v1", which can only come from a fetched file (the built-in fallback reads v0), so the first fetch is confirmed working.
+
 ## Test results so far (owner, real Pixel Watch 3)
 - 1.2: app opens; "Test alert" flashes and vibrates.
 - 1.4: "Test in 1 minute" vibrated only (no flash) until USE_FULL_SCREEN_INTENT was granted by hand with adb; after that it flashed, but late and only when the screen was dark.
