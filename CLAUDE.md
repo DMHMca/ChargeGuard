@@ -58,5 +58,6 @@ Built by GitHub Actions and installed on the owner's Pixel Watch 3 with adb. See
 ## Open decisions
 
 - **Google Play.** The owner is happy to pay the one-off $25 for a developer account and use the internal testing track, also for future apps. Developer account created on 3 November 2026; waiting for Google's identity and phone verification, after which an app can be created. When it is: switch the build to a signed bundle, upload the first one by hand, then automate uploads from GitHub Actions using a service-account key held as a GitHub secret (never in the repo, never in chat).
+- **Name.** The owner is considering renaming the app NiteGuard (it guards the night's sleep tracking); decide later, and check the name for clashes first. Renaming only the label shown on the watch is a one-line change (`android:label` in the manifest). Keep the package ID `uk.mcaughtry.chargeguard` and the repository name as they are: changing either would force an uninstall and reinstall, and renaming the repository would break the settings URL the watch fetches from.
 - **Sound** alongside flashing and vibration: not added; ask the owner.
 - **Threshold**: 45% was the owner's figure; 50% may give a safer margin for a full night of sleep tracking.
