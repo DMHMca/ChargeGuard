@@ -17,6 +17,7 @@ until it has been seen working.
 
 ## Settings v2 - fast-update test
 - Version bumped from 1 to 2 with no other change, to prove the no-install loop: push to main, press Refresh settings, status shows "Settings v2".
+- RESULT: confirmed working. After a few minutes (an early refresh still showed v1, most likely GitHub's file cache), "Refresh settings" on the watch showed v2 with no install. Allow up to about five minutes after a push.
 - Before this: the owner's watch showed "Settings v1", which can only come from a fetched file (the built-in fallback reads v0), so the first fetch is confirmed working.
 
 ## Test results so far (owner, real Pixel Watch 3)
