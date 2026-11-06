@@ -7,4 +7,5 @@ local.properties
 # Local-only files on a developer PC: the adb tool and downloaded builds
 tools/
 downloads/
+Download versions/
 *.apk
