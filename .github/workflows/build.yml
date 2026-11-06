@@ -37,3 +37,20 @@ jobs:
         with:
           name: chargeguard-v${{ steps.ver.outputs.name }}
           path: app/build/outputs/apk/debug/app-debug.apk
+      # Signed bundle for Google Play. Only runs when the upload key is stored as
+      # GitHub secrets (UPLOAD_KEYSTORE_BASE64 and UPLOAD_KEYSTORE_PASSWORD).
+      - name: Build signed bundle for Google Play
+        env:
+          KEYSTORE_B64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
+          UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then echo "No upload key set up yet; skipping the bundle."; exit 0; fi
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.keystore"
+          export UPLOAD_KEYSTORE_FILE="$RUNNER_TEMP/upload.keystore"
+          gradle :app:bundleRelease
+          rm -f "$RUNNER_TEMP/upload.keystore"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chargeguard-v${{ steps.ver.outputs.name }}-play-bundle
+          path: app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: ignore

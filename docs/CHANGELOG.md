@@ -11,6 +11,11 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.19 - build a signed bundle for Google Play
+- No change to what the app does. The build can now also produce a signed app bundle (`.aab`), which Google Play requires instead of the debug APK.
+- Signed with a separate UPLOAD key, made on the owner's PC and kept outside the repository (`C:\Users\david\ChargeGuard-keys`). Its file and password reach the build only as GitHub secrets (`UPLOAD_KEYSTORE_BASE64`, `UPLOAD_KEYSTORE_PASSWORD`); until they are added the bundle step is skipped and the debug APK is built as before.
+- Play Console: app entry created (package `uk.mcaughtry.chargeguard`), Wear OS form factor added. First Wear OS screenshot saved in `docs/store/`. Nothing uploaded to Play yet. Untested: the bundle build itself.
+
 ## 1.18 - target Android 15 (needed for Google Play)
 - Owner's Play Console account is verified. Google now requires Wear OS apps to target API 35 or later (new apps and updates, from 31 Aug 2026), so the first upload would have been rejected at targetSdk 34.
 - compileSdk and targetSdk raised from 34 to 35. No code change.

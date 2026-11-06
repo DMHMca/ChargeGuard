@@ -11,8 +11,8 @@ android {
         applicationId = "uk.mcaughtry.chargeguard"
         minSdk = 30
         targetSdk = 35
-        versionCode = 19
-        versionName = "1.18"
+        versionCode = 20
+        versionName = "1.19"
     }
 
     // A fixed debug key, so every build is signed the same and installs over the last
@@ -24,6 +24,25 @@ android {
             storePassword = "android"
             keyAlias = "androiddebugkey"
             keyPassword = "android"
+        }
+        // The Google Play UPLOAD key. The file and password come from the build
+        // environment (GitHub secrets), never from the repository. When they are
+        // absent (an ordinary debug build), the release signing is simply skipped.
+        val uploadStore = System.getenv("UPLOAD_KEYSTORE_FILE")
+        val uploadPass = System.getenv("UPLOAD_KEYSTORE_PASSWORD")
+        if (uploadStore != null && uploadPass != null) {
+            create("upload") {
+                storeFile = file(uploadStore)
+                storePassword = uploadPass
+                keyAlias = "upload"
+                keyPassword = uploadPass
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfigs.findByName("upload")?.let { signingConfig = it }
         }
     }
 
