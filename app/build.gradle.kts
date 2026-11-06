@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace = "uk.mcaughtry.chargeguard"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "uk.mcaughtry.chargeguard"
         minSdk = 30
-        targetSdk = 34
-        versionCode = 18
-        versionName = "1.17"
+        targetSdk = 35
+        versionCode = 19
+        versionName = "1.18"
     }
 
     // A fixed debug key, so every build is signed the same and installs over the last

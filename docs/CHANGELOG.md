@@ -11,6 +11,11 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.18 - target Android 15 (needed for Google Play)
+- Owner's Play Console account is verified. Google now requires Wear OS apps to target API 35 or later (new apps and updates, from 31 Aug 2026), so the first upload would have been rejected at targetSdk 34.
+- compileSdk and targetSdk raised from 34 to 35. No code change.
+- RISK: raising the target changes some Android rules about showing a screen from the background. The alert (flash, vibrate, crown to stop) MUST be re-tested on the watch with this build before relying on it: Test alert now, Test in 1 minute with the screen on and off, and the real 19:00 alarm. Untested.
+
 ## 1.17 - button order
 - Owner: crown press stops the alert (confirmed working, v1.15+). Asked for the order: Alert level, Refresh settings, then the two test buttons, then Info. Done; no other change.
 
