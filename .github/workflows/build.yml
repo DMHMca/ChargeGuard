@@ -46,9 +46,17 @@ jobs:
           UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
         run: |
           if [ -z "$KEYSTORE_B64" ]; then echo "No upload key set up yet; skipping the bundle."; exit 0; fi
-          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.keystore"
+          # Strip any stray line breaks or spaces picked up when the secrets were pasted.
+          printf '%s' "$KEYSTORE_B64" | tr -d '\r\n \t' | base64 -d > "$RUNNER_TEMP/upload.keystore"
+          export UPLOAD_KEYSTORE_PASSWORD="$(printf '%s' "$UPLOAD_KEYSTORE_PASSWORD" | tr -d '\r\n \t')"
           export UPLOAD_KEYSTORE_FILE="$RUNNER_TEMP/upload.keystore"
-          gradle :app:bundleRelease
+          ls -l "$RUNNER_TEMP/upload.keystore"
+          if ! gradle :app:bundleRelease > "$RUNNER_TEMP/bundle.log" 2>&1; then
+            # Show the reason as a visible annotation (the log holds no secrets).
+            msg=$(grep -E "error|Error|FAILED|wrong|tampered|What went wrong" -A2 "$RUNNER_TEMP/bundle.log" | head -12 | tr '\n' ' ')
+            echo "::error::Bundle build failed: $msg"
+            exit 1
+          fi
           rm -f "$RUNNER_TEMP/upload.keystore"
       - uses: actions/upload-artifact@v4
         with:
