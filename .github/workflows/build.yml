@@ -39,6 +39,7 @@ jobs:
           path: app/build/outputs/apk/debug/app-debug.apk
       # Signed bundle for Google Play. Only runs when the upload key is stored as
       # GitHub secrets (UPLOAD_KEYSTORE_BASE64 and UPLOAD_KEYSTORE_PASSWORD).
+      # (Secrets added 6 Nov 2026; this build is the first to use them.)
       - name: Build signed bundle for Google Play
         env:
           KEYSTORE_B64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
