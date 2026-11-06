@@ -11,6 +11,13 @@ until it has been seen working.
 - Is 45% enough for a full night of sleep tracking, or should it be 50%?
 - Sound as well as flashing and vibration (not added; wanted?).
 
+## 1.20 - alert that works without special permissions (Google Play installs)
+- FOUND on the owner's watch, 6 Nov 2026: the Google Play copy (1.19, installed from the internal testing track, no adb) only vibrated on "Test in 1 minute", no flashing. `appops` showed the full-screen permission denied (Android 14+ only auto-grants it to apps declared as alarm/calling apps in the Play Console) and overlay "default" (not allowed). The Pixel Watch 3 has no settings screen for either ("No activity found" for the full-screen screen), so the app cannot ask the user. Granting both with adb on the Play copy works and survives Play updates, but is too fiddly for the owner's family.
+- New fallback, used only when neither the full-screen nor the overlay permission is available: the alert notification now turns the screen on (wake lock), repeats its vibration until dismissed (insistent notification), times out after the usual 5 minutes, and is cleared when the watch goes on a charger (a small job, `ClearOnChargeJob`). Tapping the notification opens the red/white flashing screen. Where the permissions ARE granted (owner's watch, adb), behaviour is unchanged: it still flashes by itself.
+- Info screen has a new "Alert style" line: "full flash" or "buzz + notification".
+- Still to do: the Play Console declaration for the full-screen permission (core purpose: alarm), which should make Play installs flash by themselves. Not reachable yet: the Console hides that area until the app is reviewed. Keep checking.
+- Untested on the watch. To test properly it must run WITHOUT the adb permissions, so the Play copy has to be replaced by this build (debug APK now, Play bundle later; the two are signed differently and cannot be installed over each other).
+
 ## 1.19 - build a signed bundle for Google Play
 - No change to what the app does. The build can now also produce a signed app bundle (`.aab`), which Google Play requires instead of the debug APK.
 - Signed with a separate UPLOAD key, made on the owner's PC and kept outside the repository (`C:\Users\david\ChargeGuard-keys`). Its file and password reach the build only as GitHub secrets (`UPLOAD_KEYSTORE_BASE64`, `UPLOAD_KEYSTORE_PASSWORD`); until they are added the bundle step is skipped and the debug APK is built as before.

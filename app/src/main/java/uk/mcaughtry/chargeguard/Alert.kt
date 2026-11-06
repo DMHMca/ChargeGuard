@@ -1,17 +1,23 @@
 package uk.mcaughtry.chargeguard
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 
 object Alert {
     private const val CHANNEL = "charge_alert"
     private const val NOTIFICATION_ID = 1
+    private const val CLEAR_JOB_ID = 2
 
     /** Returns battery percentage and whether the watch is on a charger. */
     fun batteryStatus(c: Context): Pair<Int, Boolean> {
@@ -51,17 +57,29 @@ object Alert {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val n = NotificationCompat.Builder(c, CHANNEL)
+        // Without the full-screen and overlay permissions (the normal case for an app installed
+        // from Google Play) Android will not let the flashing screen start by itself. Then the
+        // notification has to do the work: wake the screen, repeat the vibration until it is
+        // dismissed, and disappear after the usual timeout or when the charger goes on.
+        val canTakeOver = Status.fullScreenAllowed(c) || Status.overlayAllowed(c)
+        val builder = NotificationCompat.Builder(c, CHANNEL)
             .setSmallIcon(android.R.drawable.ic_lock_idle_low_battery)
             .setContentTitle("Charge your watch")
             .setContentText("Battery $pct%")
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setFullScreenIntent(pi, true)
             .setContentIntent(pi)
             .setAutoCancel(true)
-            .build()
+        if (!canTakeOver) builder.setTimeoutAfter(Config.ALERT_TIMEOUT_MINUTES * 60_000L)
+        val n = builder.build()
+        if (!canTakeOver) n.flags = n.flags or Notification.FLAG_INSISTENT
         nm.notify(NOTIFICATION_ID, n)
+        if (!canTakeOver) {
+            wakeScreen(c)
+            clearWhenCharging(c)
+        }
 
         // Also launch the flashing screen directly. From the background this only works
         // if "display over other apps" is allowed, but then it works even when the screen
@@ -72,6 +90,31 @@ object Alert {
                 Intent(c, AlertActivity::class.java)
                     .putExtra("pct", pct)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            )
+        } catch (_: Exception) {
+        }
+    }
+
+    /** Turns the screen on for a few seconds so the notification is seen. Needs no special permission. */
+    @Suppress("DEPRECATION")
+    private fun wakeScreen(c: Context) {
+        try {
+            c.getSystemService(PowerManager::class.java)
+                .newWakeLock(
+                    PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                    "ChargeGuard:alert"
+                ).acquire(10_000L)
+        } catch (_: Exception) {
+        }
+    }
+
+    /** Asks Android to run ClearOnChargeJob once the watch is on a charger, which removes the alert. */
+    private fun clearWhenCharging(c: Context) {
+        try {
+            c.getSystemService(JobScheduler::class.java).schedule(
+                JobInfo.Builder(CLEAR_JOB_ID, ComponentName(c, ClearOnChargeJob::class.java))
+                    .setRequiresCharging(true)
+                    .build()
             )
         } catch (_: Exception) {
         }

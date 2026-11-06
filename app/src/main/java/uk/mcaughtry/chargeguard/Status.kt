@@ -36,7 +36,8 @@ object Status {
             (if (onWatch >= 0) "Level set on watch" else "Level from settings file") + "\n\n" +
             "PERMISSIONS\n" +
             "Takeover: " + (if (fullScreenAllowed(c)) "allowed" else "NOT allowed") + "\n" +
-            "Over apps: " + (if (overlayAllowed(c)) "allowed" else "NOT allowed") + "\n\n" +
+            "Over apps: " + (if (overlayAllowed(c)) "allowed" else "NOT allowed") + "\n" +
+            "Alert style: " + (if (fullScreenAllowed(c) || overlayAllowed(c)) "full flash" else "buzz + notification") + "\n\n" +
             "LAST ALARM\n" +
             "Due ${timeText(Prefs.lastDue(c))}\nFired ${timeText(Prefs.lastFired(c))}\n" +
             "Posted ${timeText(Prefs.lastPosted(c))}\nShown ${timeText(Prefs.lastShown(c))}\n\n" +

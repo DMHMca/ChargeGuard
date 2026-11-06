@@ -42,6 +42,11 @@
             android:showWhenLocked="true"
             android:turnScreenOn="true" />
 
+        <service
+            android:name=".ClearOnChargeJob"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <receiver
             android:name=".AlarmReceiver"
             android:exported="true">
