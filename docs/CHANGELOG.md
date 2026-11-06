@@ -14,7 +14,8 @@ until it has been seen working.
 ## 1.18 - target Android 15 (needed for Google Play)
 - Owner's Play Console account is verified. Google now requires Wear OS apps to target API 35 or later (new apps and updates, from 31 Aug 2026), so the first upload would have been rejected at targetSdk 34.
 - compileSdk and targetSdk raised from 34 to 35. No code change.
-- RISK: raising the target changes some Android rules about showing a screen from the background. The alert (flash, vibrate, crown to stop) MUST be re-tested on the watch with this build before relying on it: Test alert now, Test in 1 minute with the screen on and off, and the real 19:00 alarm. Untested.
+- RISK: raising the target changes some Android rules about showing a screen from the background. The alert (flash, vibrate, crown to stop) MUST be re-tested on the watch with this build before relying on it: Test alert now, Test in 1 minute with the screen on and off, and the real 19:00 alarm.
+- 6 Nov 2026: installed over v1.17 with adb. Info screen confirmed v1.18 (code 19, targeting Android 15) by the owner. Owner ran "Test in 1 minute" and reported it worked. Not yet recorded: whether the screen was on or off for that test, the Due/Fired/Posted/Shown times, and the real 19:00 alarm. Those are still to check.
 
 ## 1.17 - button order
 - Owner: crown press stops the alert (confirmed working, v1.15+). Asked for the order: Alert level, Refresh settings, then the two test buttons, then Info. Done; no other change.
