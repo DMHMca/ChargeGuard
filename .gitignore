@@ -3,3 +3,8 @@ build/
 .idea/
 local.properties
 *.iml
+
+# Local-only files on a developer PC: the adb tool and downloaded builds
+tools/
+downloads/
+*.apk
